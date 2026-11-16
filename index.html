@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Photo Gallery</title>
+    <title>Mill Creek Middle School Photo Gallery</title>
     <style>
         :root {
             --primary: #111111;
@@ -313,9 +313,7 @@
                                 });
                             })
                             .then(response => {
-                                if (!response.ok) {
-                                    throw new Error("Failed to save to cloud");
-                                }
+                                if (!response.ok) throw new Error("Failed to save to cloud");
                                 return response.json();
                             })
                             .then(data => {
@@ -325,7 +323,7 @@
                                 submitBtn.disabled = false;
                             })
                             .catch(error => {
-                                alert("Failed to upload photo. Please try again.");
+                                alert("Failed to upload photo. Please try a smaller image file.");
                                 submitBtn.textContent = "Upload Photo";
                                 submitBtn.disabled = false;
                             });

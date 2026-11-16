@@ -6,13 +6,14 @@
     <title>Mill Creek Middle School Photo Gallery</title>
     <style>
         :root {
-            --primary: #0f172a;
-            --accent: #2563eb;
-            --accent-hover: #1d4ed8;
-            --bg-color: #f8fafc;
+            --primary: #111111;
+            --accent: #d4af37;
+            --accent-hover: #b89728;
+            --accent-text: #111111;
+            --bg-color: #f8f9fa;
             --card-bg: #ffffff;
-            --text-main: #334155;
-            --border-color: #cbd5e1;
+            --text-main: #222222;
+            --border-color: #e5e7eb;
         }
 
         body {
@@ -25,10 +26,11 @@
         }
 
         header {
-            background: linear-gradient(135deg, #0f172a 0%, #1e3a8a 100%);
+            background: linear-gradient(135deg, #111111 0%, #222222 100%);
             color: white;
             padding: 40px 20px;
             text-align: center;
+            border-bottom: 4px solid var(--accent);
             box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
         }
 
@@ -43,14 +45,14 @@
         .school-icon {
             width: 50px;
             height: 50px;
-            fill: #60a5fa;
+            fill: var(--accent);
         }
 
         header h2 {
             margin: 0;
             font-size: 1.25rem;
-            font-weight: 500;
-            color: #93c5fd;
+            font-weight: 600;
+            color: var(--accent);
             letter-spacing: 0.05em;
             text-transform: uppercase;
         }
@@ -59,6 +61,7 @@
             margin: 5px 0 0 0;
             font-size: 2.5rem;
             font-weight: 700;
+            color: #ffffff;
         }
 
         main {
@@ -73,6 +76,7 @@
             margin-bottom: 30px;
             border-radius: 12px;
             box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+            border-top: 4px solid var(--primary);
         }
 
         h2 {
@@ -113,17 +117,17 @@
 
         input[type="text"]:focus, input[type="file"]:focus {
             border-color: var(--accent);
-            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+            box-shadow: 0 0 0 3px rgba(212, 175, 55, 0.2);
         }
 
         button {
             background-color: var(--accent);
-            color: white;
+            color: var(--accent-text);
             padding: 12px 20px;
             border: none;
             border-radius: 8px;
             font-size: 1rem;
-            font-weight: 600;
+            font-weight: 700;
             cursor: pointer;
             transition: background-color 0.2s, transform 0.1s;
         }
@@ -154,6 +158,7 @@
         .photo-card:hover {
             transform: translateY(-4px);
             box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+            border-color: var(--accent);
         }
 
         .photo-card img {
@@ -315,7 +320,7 @@
                                 submitBtn.disabled = false;
                             })
                             .catch(error => {
-                                alert("Failed to upload photo. Please try again.");
+                                alert("Upload failed. Please try again.");
                                 submitBtn.textContent = "Upload Photo";
                                 submitBtn.disabled = false;
                             });

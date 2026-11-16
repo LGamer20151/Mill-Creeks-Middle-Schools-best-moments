@@ -15,14 +15,20 @@
         header {
             background-color: #002b49;
             color: white;
-            padding: 20px;
+            padding: 25px 20px;
             text-align: center;
         }
-        .logo {
-            max-height: 80px;
-            width: auto;
+        .logo-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
             margin-bottom: 10px;
-            object-fit: contain;
+        }
+        .school-icon {
+            width: 45px;
+            height: 45px;
+            fill: white;
         }
         main {
             max-width: 900px;
@@ -89,8 +95,13 @@
 </head>
 <body>
     <header>
-        <img src="https://mcms.usd232.org/wp-content/uploads/sites/11/2020/07/cropped-MCMS-Logo-Transparent.png" alt="Mill Creek Middle School Logo" class="logo">
-        <h1>Mill Creek Middle School Memories</h1>
+        <div class="logo-container">
+            <svg class="school-icon" viewBox="0 0 24 24">
+                <path d="M12 3L1 9L12 15L21 10.09V17H23V9M5 13.18V17.18C5 20.09 8.16 22 12 22C15.84 22 19 20.09 19 17.18V13.18L12 17L5 13.18Z"/>
+            </svg>
+            <h2>Mill Creek Middle School</h2>
+        </div>
+        <h1>Mill Creek Memories</h1>
     </header>
 
     <main>

@@ -1,168 +1,74 @@
-const BIN_URL = 'https://api.npoint.io/0ebd6cd0b11ec4354181';
+document.addEventListener("DOMContentLoaded", () => {
+    const uploadForm = document.getElementById("uploadForm");
+    const photoTitleInput = document.getElementById("photoTitle");
+    const photoFileInput = document.getElementById("photoFile");
+    const galleryContainer = document.getElementById("galleryContainer");
 
-document.addEventListener('DOMContentLoaded', () => {
-    fetchPhotos();
+    // Load existing photos on startup
+    loadGallery();
 
-    const uploadForm = document.getElementById('upload-form');
-    if (uploadForm) {
-        uploadForm.addEventListener('submit', handleUpload);
-    }
+    uploadForm.addEventListener("submit", (e) => {
+        e.preventDefault();
 
-    const searchInput = document.getElementById('search-input');
-    if (searchInput) {
-        searchInput.addEventListener('input', handleSearch);
-    }
-});
+        const title = photoTitleInput.value;
+        const file = photoFileInput.files[0];
 
-// Fetch photos from npoint.io
-async function fetchPhotos() {
-    try {
-        const response = await fetch(BIN_URL);
-        if (!response.ok) throw new Error('Failed to fetch photos');
-        const data = await response.json();
-        // Ensure data is an array
-        window.allPhotos = Array.isArray(data) ? data : (data.photos || []);
-        renderGallery(window.allPhotos);
-    } catch (error) {
-        console.error('Error loading photos:', error);
-        document.getElementById('gallery-grid').innerHTML = '<p>Error loading photos. Please try again later.</p>';
-    }
-}
+        if (!file) return;
 
-// Render photos into the gallery grid
-function renderGallery(photos) {
-    const grid = document.getElementById('gallery-grid');
-    grid.innerHTML = '';
-
-    if (!photos || photos.length === 0) {
-        grid.innerHTML = '<p>No memories uploaded yet. Be the first to add one!</p>';
-        return;
-    }
-
-    // Sort newest first
-    const sortedPhotos = [...photos].reverse();
-
-    sortedPhotos.forEach(photo => {
-        const card = document.createElement('div');
-        card.className = 'photo-card';
-
-        card.innerHTML = `
-            <img src="${photo.image}" alt="${escapeHtml(photo.title)}">
-            <div class="photo-info">
-                <h3>${escapeHtml(photo.title)}</h3>
-                <p>${new Date(photo.date).toLocaleDateString()}</p>
-            </div>
-        `;
-        grid.appendChild(card);
-    });
-}
-
-// Compress image and handle upload
-async function handleUpload(e) {
-    e.preventDefault();
-
-    const titleInput = document.getElementById('photo-title');
-    const fileInput = document.getElementById('photo-file');
-    const submitBtn = document.querySelector('.submit-btn');
-
-    if (fileInput.files.length === 0) return;
-
-    const file = fileInput.files[0];
-    submitBtn.textContent = 'Compressing & Uploading...';
-    submitBtn.disabled = true;
-
-    try {
-        // Compress image to prevent size errors
-        const compressedDataUrl = await compressImage(file, 800, 0.7);
-
-        // Fetch current bin data first to avoid overwriting others
-        const response = await fetch(BIN_URL);
-        const currentData = await response.json();
-        let photosArray = Array.isArray(currentData) ? currentData : (currentData.photos || []);
-
-        // Create new photo object
-        const newPhoto = {
-            id: Date.now().toString(),
-            title: titleInput.value.trim(),
-            image: compressedDataUrl,
-            date: new Date().toISOString()
-        };
-
-        photosArray.push(newPhoto);
-
-        // Save updated array back to npoint.io
-        const updateResponse = await fetch(BIN_URL, {
-            method: 'PUT',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(photosArray)
-        });
-
-        if (!updateResponse.ok) throw new Error('Failed to save photo to database');
-
-        // Reset form and refresh gallery
-        titleInput.value = '';
-        fileInput.value = '';
-        window.allPhotos = photosArray;
-        renderGallery(window.allPhotos);
-        alert('Photo uploaded successfully!');
-
-    } catch (error) {
-        console.error('Upload error:', error);
-        alert('Failed to upload photo. The file might still be too large or there was a network error.');
-    } finally {
-        submitBtn.textContent = 'Upload Photo';
-        submitBtn.disabled = false;
-    }
-}
-
-// Helper function to compress images using canvas
-function compressImage(file, maxWidth, quality) {
-    return new Promise((resolve, reject) => {
         const reader = new FileReader();
-        reader.readAsDataURL(file);
-        reader.onload = event => {
+        reader.onload = function (event) {
             const img = new Image();
             img.src = event.target.result;
-            img.onload = () => {
-                const canvas = document.createElement('canvas');
-                let width = img.width;
-                let height = img.height;
+            img.onload = function () {
+                // Compress image using a canvas to avoid storage limits
+                const canvas = document.createElement("canvas");
+                const MAX_WIDTH = 600;
+                const scaleSize = MAX_WIDTH / img.width;
+                canvas.width = MAX_WIDTH;
+                canvas.height = img.height * scaleSize;
 
-                if (width > maxWidth) {
-                    height = Math.round((height * maxWidth) / width);
-                    width = maxWidth;
-                }
+                const ctx = canvas.getContext("2d");
+                ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
 
-                canvas.width = width;
-                canvas.height = height;
+                const compressedDataUrl = canvas.toDataURL("image/jpeg", 0.7);
 
-                const ctx = canvas.getContext('2d');
-                ctx.drawImage(img, 0, 0, width, height);
-
-                resolve(canvas.toDataURL('image/jpeg', quality));
+                savePhotoToStorage(title, compressedDataUrl);
+                uploadForm.reset();
+                loadGallery();
             };
-            img.onerror = error => reject(error);
         };
-        reader.onerror = error => reject(error);
+        reader.readAsDataURL(file);
     });
-}
 
-// Live search filter
-function handleSearch(e) {
-    const term = e.target.value.toLowerCase();
-    if (!window.allPhotos) return;
+    function savePhotoToStorage(title, imageUrl) {
+        const photos = JSON.parse(localStorage.getItem("mcms_photos")) || [];
+        photos.unshift({ title: title, url: imageUrl, date: new Date().toISOString() });
+        localStorage.setItem("mcms_photos", JSON.stringify(photos));
+    }
 
-    const filtered = window.allPhotos.filter(photo => 
-        photo.title.toLowerCase().includes(term)
-    );
-    renderGallery(filtered);
-}
+    function loadGallery() {
+        const photos = JSON.parse(localStorage.getItem("mcms_photos")) || [];
+        galleryContainer.innerHTML = "";
 
-// Simple HTML escaper for security
-function escapeHtml(str) {
-    return str.replace(/[&<>'"]/g, 
-        tag => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[tag] || tag)
-    );
-}
+        if (photos.length === 0) {
+            galleryContainer.innerHTML = "<p>No memories uploaded yet. Be the first to add one!</p>";
+            return;
+        }
+
+        photos.forEach((photo) => {
+            const card = document.createElement("div");
+            card.className = "photo-card";
+
+            const img = document.createElement("img");
+            img.src = photo.url;
+            img.alt = photo.title;
+
+            const p = document.createElement("p");
+            p.textContent = photo.title;
+
+            card.appendChild(img);
+            card.appendChild(p);
+            galleryContainer.appendChild(card);
+        });
+    }
+});

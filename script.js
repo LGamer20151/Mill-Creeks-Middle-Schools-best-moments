@@ -1,64 +1,128 @@
-const BIN_ID = '0ebd6cd0b11ec4354181';
-const API_URL = `https://api.npoint.io/${BIN_ID}`;
+const BIN_URL = 'https://api.npoint.io/0ebd6cd0b11ec4354181';
 
-const uploadForm = document.getElementById('uploadForm');
-const uploaderNameInput = document.getElementById('uploaderName');
-const photoFileInput = document.getElementById('photoFile');
-const gallery = document.getElementById('gallery');
-const searchInput = document.getElementById('searchInput');
-const submitBtn = document.getElementById('submitBtn');
+document.addEventListener('DOMContentLoaded', () => {
+    fetchPhotos();
 
-let allPhotos = [];
+    const uploadForm = document.getElementById('upload-form');
+    if (uploadForm) {
+        uploadForm.addEventListener('submit', handleUpload);
+    }
 
-// Fetch photos from npoint.io object structure
+    const searchInput = document.getElementById('search-input');
+    if (searchInput) {
+        searchInput.addEventListener('input', handleSearch);
+    }
+});
+
+// Fetch photos from npoint.io
 async function fetchPhotos() {
     try {
-        const response = await fetch(API_URL);
-        if (!response.ok) throw new Error('Failed to fetch');
+        const response = await fetch(BIN_URL);
+        if (!response.ok) throw new Error('Failed to fetch photos');
         const data = await response.json();
-        
-        // Extract array from the photos property
-        allPhotos = Array.isArray(data.photos) ? data.photos : [];
-        displayPhotos(allPhotos);
+        // Ensure data is an array
+        window.allPhotos = Array.isArray(data) ? data : (data.photos || []);
+        renderGallery(window.allPhotos);
     } catch (error) {
-        console.error(error);
-        gallery.innerHTML = '<p>Could not load photos. Please check your connection.</p>';
+        console.error('Error loading photos:', error);
+        document.getElementById('gallery-grid').innerHTML = '<p>Error loading photos. Please try again later.</p>';
     }
 }
 
-// Display photos in the gallery grid
-function displayPhotos(photos) {
-    gallery.innerHTML = '';
-    if (photos.length === 0) {
-        gallery.innerHTML = '<p>No photos found matching your search.</p>';
+// Render photos into the gallery grid
+function renderGallery(photos) {
+    const grid = document.getElementById('gallery-grid');
+    grid.innerHTML = '';
+
+    if (!photos || photos.length === 0) {
+        grid.innerHTML = '<p>No memories uploaded yet. Be the first to add one!</p>';
         return;
     }
 
-    // Show newest photos first
-    [...photos].reverse().forEach(item => {
+    // Sort newest first
+    const sortedPhotos = [...photos].reverse();
+
+    sortedPhotos.forEach(photo => {
         const card = document.createElement('div');
         card.className = 'photo-card';
+
         card.innerHTML = `
-            <img src="${item.image}" alt="Photo by ${item.name}">
-            <p><strong>${item.name}</strong></p>
+            <img src="${photo.image}" alt="${escapeHtml(photo.title)}">
+            <div class="photo-info">
+                <h3>${escapeHtml(photo.title)}</h3>
+                <p>${new Date(photo.date).toLocaleDateString()}</p>
+            </div>
         `;
-        gallery.appendChild(card);
+        grid.appendChild(card);
     });
 }
 
-// Live search filter for names
-searchInput.addEventListener('input', (e) => {
-    const query = e.target.value.toLowerCase().trim();
-    const filtered = allPhotos.filter(item => item.name.toLowerCase().includes(query));
-    displayPhotos(filtered);
-});
+// Compress image and handle upload
+async function handleUpload(e) {
+    e.preventDefault();
 
-// Compress image function with aggressive sizing to keep file size small
-function compressImage(file, maxWidth = 350, quality = 0.4) {
-    return new Promise((resolve) => {
+    const titleInput = document.getElementById('photo-title');
+    const fileInput = document.getElementById('photo-file');
+    const submitBtn = document.querySelector('.submit-btn');
+
+    if (fileInput.files.length === 0) return;
+
+    const file = fileInput.files[0];
+    submitBtn.textContent = 'Compressing & Uploading...';
+    submitBtn.disabled = true;
+
+    try {
+        // Compress image to prevent size errors
+        const compressedDataUrl = await compressImage(file, 800, 0.7);
+
+        // Fetch current bin data first to avoid overwriting others
+        const response = await fetch(BIN_URL);
+        const currentData = await response.json();
+        let photosArray = Array.isArray(currentData) ? currentData : (currentData.photos || []);
+
+        // Create new photo object
+        const newPhoto = {
+            id: Date.now().toString(),
+            title: titleInput.value.trim(),
+            image: compressedDataUrl,
+            date: new Date().toISOString()
+        };
+
+        photosArray.push(newPhoto);
+
+        // Save updated array back to npoint.io
+        const updateResponse = await fetch(BIN_URL, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(photosArray)
+        });
+
+        if (!updateResponse.ok) throw new Error('Failed to save photo to database');
+
+        // Reset form and refresh gallery
+        titleInput.value = '';
+        fileInput.value = '';
+        window.allPhotos = photosArray;
+        renderGallery(window.allPhotos);
+        alert('Photo uploaded successfully!');
+
+    } catch (error) {
+        console.error('Upload error:', error);
+        alert('Failed to upload photo. The file might still be too large or there was a network error.');
+    } finally {
+        submitBtn.textContent = 'Upload Photo';
+        submitBtn.disabled = false;
+    }
+}
+
+// Helper function to compress images using canvas
+function compressImage(file, maxWidth, quality) {
+    return new Promise((resolve, reject) => {
         const reader = new FileReader();
         reader.readAsDataURL(file);
-        reader.onload = (event) => {
+        reader.onload = event => {
             const img = new Image();
             img.src = event.target.result;
             img.onload = () => {
@@ -73,51 +137,32 @@ function compressImage(file, maxWidth = 350, quality = 0.4) {
 
                 canvas.width = width;
                 canvas.height = height;
+
                 const ctx = canvas.getContext('2d');
                 ctx.drawImage(img, 0, 0, width, height);
 
                 resolve(canvas.toDataURL('image/jpeg', quality));
             };
+            img.onerror = error => reject(error);
         };
+        reader.onerror = error => reject(error);
     });
 }
 
-// Handle photo upload submission
-uploadForm.addEventListener('submit', async (e) => {
-    e.preventDefault();
-    const name = uploaderNameInput.value.trim();
-    const file = photoFileInput.files[0];
+// Live search filter
+function handleSearch(e) {
+    const term = e.target.value.toLowerCase();
+    if (!window.allPhotos) return;
 
-    if (!file) return;
+    const filtered = window.allPhotos.filter(photo => 
+        photo.title.toLowerCase().includes(term)
+    );
+    renderGallery(filtered);
+}
 
-    submitBtn.textContent = 'Uploading...';
-    submitBtn.disabled = true;
-
-    try {
-        const compressedBase64 = await compressImage(file);
-        const newEntry = { name: name, image: compressedBase64 };
-        const updatedPhotos = [...allPhotos, newEntry];
-
-        // Send data wrapped in the photos object structure
-        const response = await fetch(API_URL, {
-            method: 'PUT',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ photos: updatedPhotos })
-        });
-
-        if (!response.ok) throw new Error('Failed to save upload');
-
-        alert('Photo uploaded successfully!');
-        uploadForm.reset();
-        await fetchPhotos();
-    } catch (error) {
-        console.error(error);
-        alert('Upload failed. The image might be too large or the network blocked the request.');
-    } finally {
-        submitBtn.textContent = 'Upload Photo';
-        submitBtn.disabled = false;
-    }
-});
-
-// Load photos on page load
-fetchPhotos();
+// Simple HTML escaper for security
+function escapeHtml(str) {
+    return str.replace(/[&<>'"]/g, 
+        tag => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[tag] || tag)
+    );
+}

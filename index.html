@@ -288,7 +288,7 @@
                     img.src = event.target.result;
                     img.onload = function () {
                         const canvas = document.createElement("canvas");
-                        const MAX_WIDTH = 400;
+                        const MAX_WIDTH = 300;
                         const scaleSize = MAX_WIDTH / img.width;
                         canvas.width = MAX_WIDTH;
                         canvas.height = img.height * scaleSize;
@@ -296,7 +296,7 @@
                         const ctx = canvas.getContext("2d");
                         ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
 
-                        const compressedDataUrl = canvas.toDataURL("image/jpeg", 0.6);
+                        const compressedDataUrl = canvas.toDataURL("image/jpeg", 0.5);
 
                         fetch(CLOUD_API_URL)
                             .then(response => response.json())
@@ -312,7 +312,12 @@
                                     body: JSON.stringify({ photos: photos })
                                 });
                             })
-                            .then(response => response.json())
+                            .then(response => {
+                                if (!response.ok) {
+                                    throw new Error("Failed to save to cloud");
+                                }
+                                return response.json();
+                            })
                             .then(data => {
                                 renderGallery(data.photos || []);
                                 uploadForm.reset();
@@ -320,7 +325,7 @@
                                 submitBtn.disabled = false;
                             })
                             .catch(error => {
-                                alert("Upload failed. Please try again.");
+                                alert("Failed to upload photo. Please try again.");
                                 submitBtn.textContent = "Upload Photo";
                                 submitBtn.disabled = false;
                             });

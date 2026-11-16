@@ -1,4 +1,4 @@
-const BIN_ID = '0ebd6cd0b11ec4354181';
+const BIN_ID = '98737ee448495578a640';
 const API_URL = `https://api.npoint.io/${BIN_ID}`;
 
 const uploadForm = document.getElementById('uploadForm');

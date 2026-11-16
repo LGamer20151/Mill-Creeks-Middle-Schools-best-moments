@@ -1,4 +1,4 @@
-const BIN_ID = '98737ee448495578a640';
+const BIN_ID = '0ebd6cd0b11ec4354181';
 const API_URL = `https://api.npoint.io/${BIN_ID}`;
 
 const uploadForm = document.getElementById('uploadForm');
@@ -51,8 +51,8 @@ searchInput.addEventListener('input', (e) => {
     displayPhotos(filtered);
 });
 
-// Compress image function to prevent file size errors
-function compressImage(file, maxWidth = 800, quality = 0.7) {
+// Compress image function with aggressive sizing to prevent size errors
+function compressImage(file, maxWidth = 400, quality = 0.5) {
     return new Promise((resolve) => {
         const reader = new FileReader();
         reader.readAsDataURL(file);
@@ -92,7 +92,6 @@ uploadForm.addEventListener('submit', async (e) => {
     submitBtn.disabled = true;
 
     try {
-        // Compress image before saving
         const compressedBase64 = await compressImage(file);
         const newEntry = { name: name, image: compressedBase64 };
         const updatedPhotos = [...allPhotos, newEntry];
@@ -107,10 +106,10 @@ uploadForm.addEventListener('submit', async (e) => {
 
         alert('Photo uploaded successfully!');
         uploadForm.reset();
-        fetchPhotos();
+        await fetchPhotos();
     } catch (error) {
         console.error(error);
-        alert('Upload failed. Please try a smaller image file.');
+        alert('Upload failed. The network might be blocking the request or the bin needs to be initialized with [].');
     } finally {
         submitBtn.textContent = 'Upload Photo';
         submitBtn.disabled = false;

@@ -6,9 +6,9 @@
     <title>Mill Creek Middle School's Best Moments</title>
     <style>
         :root {
-            --primary-green: #0a4d2e;
-            --accent-gold: #d4af37;
-            --bg-color: #f0f7f4;
+            --primary-blue: #002b49;
+            --accent-gold: #f4b251;
+            --bg-color: #f4f6f9;
         }
         body { 
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
@@ -20,7 +20,7 @@
         }
         header {
             text-align: center;
-            background: linear-gradient(135deg, var(--primary-green), #145a32);
+            background: linear-gradient(135deg, var(--primary-blue), #004080);
             color: white;
             padding: 30px;
             border-radius: 12px;
@@ -44,9 +44,9 @@
             border-radius: 12px; 
             margin-bottom: 20px; 
             box-shadow: 0 4px 10px rgba(0,0,0,0.05); 
-            border-top: 5px solid var(--primary-green);
+            border-top: 5px solid var(--primary-blue);
         }
-        .card h2 { margin-top: 0; color: var(--primary-green); font-size: 20px; }
+        .card h2 { margin-top: 0; color: var(--primary-blue); font-size: 20px; }
         input[type="text"], input[type="file"], button { 
             padding: 12px; 
             margin: 8px 0; 
@@ -57,14 +57,14 @@
             font-size: 16px;
         }
         button {
-            background: var(--primary-green);
+            background: var(--primary-blue);
             color: white;
             border: none;
             font-weight: bold;
             cursor: pointer;
             transition: background 0.2s;
         }
-        button:hover { background: #145a32; }
+        button:hover { background: #001d33; }
         .gallery { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 20px; }
         .photo-card { 
             background: white; 
@@ -81,7 +81,8 @@
 <body>
     
     <header>
-        <img src="https://via.placeholder.com/150/0a4d2e/d4af37?text=MCMS" alt="Mill Creek Middle School Logo">
+        <!-- Updated logo source pointing to the school district visual style -->
+        <img src="https://mcms.usd232.0rg/favicon.ico" onerror="this.src='https://via.placeholder.com/150/002b49/f4b251?text=MCMS'" alt="Mill Creek Middle School Logo">
         <h1>Mill Creek Middle School's Best Moments</h1>
         <p class="subtitle">Official Student Photo Sharing Portal</p>
     </header>

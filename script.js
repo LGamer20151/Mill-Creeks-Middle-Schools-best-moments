@@ -1,4 +1,4 @@
-// REPLACE WITH YOUR NPOINT BIN URL
+// Connected to your npoint bin
 const API_URL = "https://api.npoint.io/0ebd6cd0b11ec4354181";
 
 const uploadForm = document.getElementById('uploadForm');
@@ -8,6 +8,7 @@ const submitBtn = document.getElementById('submitBtn');
 async function loadMoments() {
     try {
         const response = await fetch(API_URL);
+        if (!response.ok) throw new Error('Could not connect to storage.');
         const moments = await response.json();
         galleryGrid.innerHTML = '';
         
@@ -29,7 +30,8 @@ async function loadMoments() {
             galleryGrid.appendChild(card);
         });
     } catch (error) {
-        galleryGrid.innerHTML = '<p class="text-red-500 col-span-full text-center py-8">Failed to load moments. Please check your API URL.</p>';
+        console.error(error);
+        galleryGrid.innerHTML = '<p class="text-red-500 col-span-full text-center py-8">Failed to load moments. Check your API URL.</p>';
     }
 }
 
@@ -49,55 +51,59 @@ uploadForm.addEventListener('submit', function(e) {
     reader.onload = async function(event) {
         const img = new Image();
         img.onload = async function() {
-            const canvas = document.createElement('canvas');
-            const MAX_WIDTH = 600;
-            const MAX_HEIGHT = 600;
-            let width = img.width;
-            let height = img.height;
-
-            if (width > height) {
-                if (width > MAX_WIDTH) {
-                    height *= MAX_WIDTH / width;
-                    width = MAX_WIDTH;
-                }
-            } else {
-                if (height > MAX_HEIGHT) {
-                    width *= MAX_HEIGHT / height;
-                    height = MAX_HEIGHT;
-                }
-            }
-
-            canvas.width = width;
-            canvas.height = height;
-            const ctx = canvas.getContext('2d');
-            ctx.drawImage(img, 0, 0, width, height);
-
-            const compressedDataUrl = canvas.toDataURL('image/jpeg', 0.6);
-
-            const newMoment = {
-                author: name,
-                caption: caption,
-                image: compressedDataUrl,
-                date: new Date().toISOString()
-            };
-
             try {
+                const canvas = document.createElement('canvas');
+                const MAX_WIDTH = 500;
+                const MAX_HEIGHT = 500;
+                let width = img.width;
+                let height = img.height;
+
+                if (width > height) {
+                    if (width > MAX_WIDTH) {
+                        height *= MAX_WIDTH / width;
+                        width = MAX_WIDTH;
+                    }
+                } else {
+                    if (height > MAX_HEIGHT) {
+                        width *= MAX_HEIGHT / height;
+                        height = MAX_HEIGHT;
+                    }
+                }
+
+                canvas.width = width;
+                canvas.height = height;
+                const ctx = canvas.getContext('2d');
+                ctx.drawImage(img, 0, 0, width, height);
+
+                const compressedDataUrl = canvas.toDataURL('image/jpeg', 0.5);
+
+                const newMoment = {
+                    author: name,
+                    caption: caption,
+                    image: compressedDataUrl,
+                    date: new Date().toISOString()
+                };
+
                 const getRes = await fetch(API_URL);
+                if (!getRes.ok) throw new Error('Failed to fetch existing moments.');
                 let moments = await getRes.json();
                 if (!Array.isArray(moments)) moments = [];
                 
                 moments.unshift(newMoment);
 
-                await fetch(API_URL, {
+                const putRes = await fetch(API_URL, {
                     method: 'PUT',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(moments)
                 });
 
+                if (!putRes.ok) throw new Error('Failed to save to cloud storage.');
+
                 uploadForm.reset();
                 loadMoments();
             } catch (err) {
-                alert('Upload failed. Please try again.');
+                console.error(err);
+                alert('Upload error: ' + err.message);
             } finally {
                 submitBtn.textContent = 'Upload Moment';
                 submitBtn.disabled = false;

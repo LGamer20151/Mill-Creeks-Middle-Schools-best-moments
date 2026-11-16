@@ -10,13 +10,15 @@ const submitBtn = document.getElementById('submitBtn');
 
 let allPhotos = [];
 
-// Fetch photos from npoint.io
+// Fetch photos from npoint.io object structure
 async function fetchPhotos() {
     try {
         const response = await fetch(API_URL);
         if (!response.ok) throw new Error('Failed to fetch');
         const data = await response.json();
-        allPhotos = Array.isArray(data) ? data : [];
+        
+        // Extract array from the photos property
+        allPhotos = Array.isArray(data.photos) ? data.photos : [];
         displayPhotos(allPhotos);
     } catch (error) {
         console.error(error);
@@ -51,8 +53,8 @@ searchInput.addEventListener('input', (e) => {
     displayPhotos(filtered);
 });
 
-// Compress image function with aggressive sizing to prevent size errors
-function compressImage(file, maxWidth = 400, quality = 0.5) {
+// Compress image function with aggressive sizing to keep file size small
+function compressImage(file, maxWidth = 350, quality = 0.4) {
     return new Promise((resolve) => {
         const reader = new FileReader();
         reader.readAsDataURL(file);
@@ -96,10 +98,11 @@ uploadForm.addEventListener('submit', async (e) => {
         const newEntry = { name: name, image: compressedBase64 };
         const updatedPhotos = [...allPhotos, newEntry];
 
+        // Send data wrapped in the photos object structure
         const response = await fetch(API_URL, {
             method: 'PUT',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(updatedPhotos)
+            body: JSON.stringify({ photos: updatedPhotos })
         });
 
         if (!response.ok) throw new Error('Failed to save upload');

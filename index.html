@@ -3,107 +3,51 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mill Creek Middle School's Best Moments</title>
-    <style>
-        :root {
-            --primary-blue: #000000;
-            --accent-gold: #f4b251;
-            --bg-color: #f4f6f9;
-        }
-        body { 
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
-            max-width: 900px; 
-            margin: 0 auto; 
-            padding: 20px; 
-            background: var(--bg-color); 
-            color: #333;
-        }
-        header {
-            text-align: center;
-            background: linear-gradient(135deg, var(--primary-blue), #222222);
-            color: white;
-            padding: 30px;
-            border-radius: 12px;
-            margin-bottom: 25px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-        }
-        header img {
-            width: 90px;
-            height: 90px;
-            border-radius: 50%;
-            border: 3px solid var(--accent-gold);
-            object-fit: cover;
-            margin-bottom: 10px;
-            background: white;
-        }
-        h1 { margin: 10px 0 5px 0; font-size: 28px; }
-        p.subtitle { color: var(--accent-gold); font-weight: bold; margin: 0; }
-        .card { 
-            background: white; 
-            padding: 25px; 
-            border-radius: 12px; 
-            margin-bottom: 20px; 
-            box-shadow: 0 4px 10px rgba(0,0,0,0.05); 
-            border-top: 5px solid var(--primary-blue);
-        }
-        .card h2 { margin-top: 0; color: var(--primary-blue); font-size: 20px; }
-        input[type="text"], input[type="file"], button { 
-            padding: 12px; 
-            margin: 8px 0; 
-            width: 100%; 
-            box-sizing: border-box; 
-            border: 1px solid #ccc;
-            border-radius: 6px;
-            font-size: 16px;
-        }
-        button {
-            background: var(--primary-blue);
-            color: white;
-            border: none;
-            font-weight: bold;
-            cursor: pointer;
-            transition: background 0.2s;
-        }
-        button:hover { background: #333333; }
-        .gallery { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 20px; }
-        .photo-card { 
-            background: white; 
-            padding: 12px; 
-            border-radius: 8px; 
-            box-shadow: 0 2px 5px rgba(0,0,0,0.08); 
-            text-align: center; 
-            border: 1px solid #e1e1e1;
-        }
-        .photo-card img { width: 100%; height: 160px; object-fit: cover; border-radius: 6px; }
-        .photo-card p { margin: 10px 0 0 0; font-weight: 500; color: #444; }
-    </style>
+    <title>Mill Creek's Middle School's Best Moments</title>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    
+
     <header>
-        <img src="https://via.placeholder.com/150/000000/f4b251?text=MCMS" alt="Mill Creek Middle School Logo">
-        <h1>Mill Creek Middle School's Best Moments</h1>
-        <p class="subtitle">Official Student Photo Sharing Portal</p>
+        <div class="header-container">
+            <img src="https://mcms.usd232.org/wp-content/uploads/sites/11/2021/07/cropped-cropped-MCMS-Logo-Gold.png" alt="Mill Creek Middle School Logo" class="school-logo">
+            <h1>Mill Creek's Middle School's Best Moments</h1>
+        </div>
     </header>
-    
-    <div class="card">
-        <h2>Upload a New Memory</h2>
-        <form id="uploadForm">
-            <input type="text" id="uploaderName" placeholder="Your Name or Student ID" required>
-            <input type="file" id="photoFile" accept="image/*" required>
-            <button type="submit" id="submitBtn">Upload Photo</button>
-        </form>
-    </div>
 
-    <div class="card">
-        <h2>Search Photos by Name</h2>
-        <input type="text" id="searchInput" placeholder="Type a name to filter photos...">
-    </div>
+    <main>
+        <!-- Upload Section -->
+        <section class="upload-section">
+            <h2>Upload a New Memory</h2>
+            <form id="upload-form">
+                <div class="form-group">
+                    <label for="photo-title">Photo Title or Description:</label>
+                    <input type="text" id="photo-title" placeholder="e.g., 8th Grade Graduation Celebration" required>
+                </div>
+                <div class="form-group">
+                    <label for="photo-file">Select Image File:</label>
+                    <input type="file" id="photo-file" accept="image/*" required>
+                </div>
+                <button type="submit" class="submit-btn">Upload Photo</button>
+            </form>
+        </section>
 
-    <div class="card">
-        <h2>Photo Gallery</h2>
-        <div id="gallery" class="gallery">Loading photos...</div>
-    </div>
+        <!-- Search Section -->
+        <section class="search-section">
+            <input type="text" id="search-input" placeholder="Search gallery by title...">
+        </section>
+
+        <!-- Gallery Grid Section -->
+        <section class="gallery-section">
+            <div id="gallery-grid" class="gallery-grid">
+                <!-- Dynamic photos will load here from script.js -->
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <p>&copy; 2026 Mill Creek Middle School. All rights reserved.</p>
+    </footer>
 
     <script src="script.js"></script>
 </body>

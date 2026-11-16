@@ -6,6 +6,7 @@ const uploaderNameInput = document.getElementById('uploaderName');
 const photoFileInput = document.getElementById('photoFile');
 const gallery = document.getElementById('gallery');
 const searchInput = document.getElementById('searchInput');
+const submitBtn = document.getElementById('submitBtn');
 
 let allPhotos = [];
 
@@ -27,7 +28,7 @@ async function fetchPhotos() {
 function displayPhotos(photos) {
     gallery.innerHTML = '';
     if (photos.length === 0) {
-        gallery.innerHTML = '<p>No photos found.</p>';
+        gallery.innerHTML = '<p>No photos found matching your search.</p>';
         return;
     }
 
@@ -43,12 +44,41 @@ function displayPhotos(photos) {
     });
 }
 
-// Live search filter
+// Live search filter for names
 searchInput.addEventListener('input', (e) => {
     const query = e.target.value.toLowerCase().trim();
     const filtered = allPhotos.filter(item => item.name.toLowerCase().includes(query));
     displayPhotos(filtered);
 });
+
+// Compress image function to prevent file size errors
+function compressImage(file, maxWidth = 800, quality = 0.7) {
+    return new Promise((resolve) => {
+        const reader = new FileReader();
+        reader.readAsDataURL(file);
+        reader.onload = (event) => {
+            const img = new Image();
+            img.src = event.target.result;
+            img.onload = () => {
+                const canvas = document.createElement('canvas');
+                let width = img.width;
+                let height = img.height;
+
+                if (width > maxWidth) {
+                    height = Math.round((height * maxWidth) / width);
+                    width = maxWidth;
+                }
+
+                canvas.width = width;
+                canvas.height = height;
+                const ctx = canvas.getContext('2d');
+                ctx.drawImage(img, 0, 0, width, height);
+
+                resolve(canvas.toDataURL('image/jpeg', quality));
+            };
+        };
+    });
+}
 
 // Handle photo upload submission
 uploadForm.addEventListener('submit', async (e) => {
@@ -58,30 +88,33 @@ uploadForm.addEventListener('submit', async (e) => {
 
     if (!file) return;
 
-    const reader = new FileReader();
-    reader.onload = async function(event) {
-        const base64Image = event.target.result;
-        const newEntry = { name: name, image: base64Image };
+    submitBtn.textContent = 'Uploading...';
+    submitBtn.disabled = true;
+
+    try {
+        // Compress image before saving
+        const compressedBase64 = await compressImage(file);
+        const newEntry = { name: name, image: compressedBase64 };
         const updatedPhotos = [...allPhotos, newEntry];
 
-        try {
-            const response = await fetch(API_URL, {
-                method: 'PUT',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(updatedPhotos)
-            });
+        const response = await fetch(API_URL, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(updatedPhotos)
+        });
 
-            if (!response.ok) throw new Error('Failed to save upload');
+        if (!response.ok) throw new Error('Failed to save upload');
 
-            alert('Photo uploaded successfully!');
-            uploadForm.reset();
-            fetchPhotos();
-        } catch (error) {
-            console.error(error);
-            alert('Upload failed. The image file might be too large for the database.');
-        }
-    };
-    reader.readAsDataURL(file);
+        alert('Photo uploaded successfully!');
+        uploadForm.reset();
+        fetchPhotos();
+    } catch (error) {
+        console.error(error);
+        alert('Upload failed. Please try a smaller image file.');
+    } finally {
+        submitBtn.textContent = 'Upload Photo';
+        submitBtn.disabled = false;
+    }
 });
 
 // Initial data load

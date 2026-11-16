@@ -1,5 +1,5 @@
 // REPLACE WITH YOUR NPOINT BIN URL
-const API_URL = "https://api.npoint.io/YOUR_BIN_ID";
+const API_URL = "https://api.npoint.io/0ebd6cd0b11ec4354181";
 
 const uploadForm = document.getElementById('uploadForm');
 const galleryGrid = document.getElementById('galleryGrid');

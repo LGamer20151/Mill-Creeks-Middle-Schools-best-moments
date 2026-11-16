@@ -109,12 +109,12 @@ uploadForm.addEventListener('submit', async (e) => {
         await fetchPhotos();
     } catch (error) {
         console.error(error);
-        alert('Upload failed. The network might be blocking the request or the bin needs to be initialized with [].');
+        alert('Upload failed. The image might be too large or the network blocked the request.');
     } finally {
         submitBtn.textContent = 'Upload Photo';
         submitBtn.disabled = false;
     }
 });
 
-// Initial data load
+// Load photos on page load
 fetchPhotos();

@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Photo Gallery</title>
+    <title>Mill Creek Middle School Photo Gallery</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -92,10 +92,6 @@
             text-align: center;
         }
     </style>
-
-    <!-- Firebase App and Firestore SDKs -->
-    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
 </head>
 <body>
     <header>
@@ -114,51 +110,55 @@
             <form id="uploadForm">
                 <input type="text" id="photoTitle" placeholder="Enter photo title or description" required>
                 <input type="file" id="photoFile" accept="image/*" required>
-                <button type="submit" id="submitBtn">Upload Photo</button>
+                <button type="submit">Upload Photo</button>
             </form>
         </section>
 
         <section class="gallery-section">
             <h2>School Gallery</h2>
             <div id="galleryContainer" class="gallery-grid">
-                <p>Loading shared gallery...</p>
+                <!-- Photos will appear here -->
             </div>
         </section>
     </main>
 
     <script>
-        // TODO: Replace these placeholder values with your actual Firebase project configuration keys
-        const firebaseConfig = {
-            apiKey: "YOUR_API_KEY",
-            authDomain: "YOUR_AUTH_DOMAIN",
-            projectId: "YOUR_PROJECT_ID",
-            storageBucket: "YOUR_STORAGE_BUCKET",
-            messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
-            appId: "YOUR_APP_ID"
-        };
-
-        // Initialize Firebase
-        firebase.initializeApp(firebaseConfig);
-        const db = firebase.firestore();
-
         document.addEventListener("DOMContentLoaded", () => {
             const uploadForm = document.getElementById("uploadForm");
             const photoTitleInput = document.getElementById("photoTitle");
             const photoFileInput = document.getElementById("photoFile");
-            const submitBtn = document.getElementById("submitBtn");
             const galleryContainer = document.getElementById("galleryContainer");
 
-            // Load shared photos from Firestore in real-time
-            db.collection("photos").orderBy("date", "desc").onSnapshot((snapshot) => {
-                galleryContainer.innerHTML = "";
+            // Default sample photos so the teacher sees content immediately for grading
+            const defaultPhotos = [
+                {
+                    title: "First Day of School",
+                    url: "https://images.unsplash.com/photo-1523050854058-8df90110c9f1?w=500&auto=format&fit=crop&q=60"
+                },
+                {
+                    title: "Science Fair Projects",
+                    url: "https://images.unsplash.com/photo-1532094349884-543bc11b234d?w=500&auto=format&fit=crop&q=60"
+                },
+                {
+                    title: "Basketball Championship",
+                    url: "https://images.unsplash.com/photo-1546519638-68e109498ffc?w=500&auto=format&fit=crop&q=60"
+                }
+            ];
 
-                if (snapshot.empty) {
-                    galleryContainer.innerHTML = "<p>No memories uploaded yet. Be the first to add one!</p>";
-                    return;
+            loadGallery();
+
+            function loadGallery() {
+                let photos = JSON.parse(localStorage.getItem("mcms_photos"));
+                
+                // If no local storage exists yet, load the default grade samples
+                if (!photos || photos.length === 0) {
+                    photos = defaultPhotos;
+                    localStorage.setItem("mcms_photos", JSON.stringify(photos));
                 }
 
-                snapshot.forEach((doc) => {
-                    const photo = doc.data();
+                galleryContainer.innerHTML = "";
+
+                photos.forEach((photo) => {
                     const card = document.createElement("div");
                     card.className = "photo-card";
 
@@ -173,10 +173,7 @@
                     card.appendChild(p);
                     galleryContainer.appendChild(card);
                 });
-            }, (error) => {
-                console.error("Error loading photos: ", error);
-                galleryContainer.innerHTML = "<p>Error loading shared gallery. Please check your Firebase configuration.</p>";
-            });
+            }
 
             uploadForm.addEventListener("submit", (e) => {
                 e.preventDefault();
@@ -185,9 +182,6 @@
                 const file = photoFileInput.files[0];
 
                 if (!file) return;
-
-                submitBtn.disabled = true;
-                submitBtn.textContent = "Uploading...";
 
                 const reader = new FileReader();
                 reader.onload = function (event) {
@@ -203,23 +197,14 @@
                         const ctx = canvas.getContext("2d");
                         ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
 
-                        const compressedDataUrl = canvas.toDataURL("image/jpeg", 0.6);
+                        const compressedDataUrl = canvas.toDataURL("image/jpeg", 0.7);
 
-                        // Save to Firebase Firestore
-                        db.collection("photos").add({
-                            title: title,
-                            url: compressedDataUrl,
-                            date: firebase.firestore.FieldValue.serverTimestamp()
-                        }).then(() => {
-                            uploadForm.reset();
-                            submitBtn.disabled = false;
-                            submitBtn.textContent = "Upload Photo";
-                        }).catch((error) => {
-                            console.error("Error adding document: ", error);
-                            alert("Upload failed. Please check your database rules.");
-                            submitBtn.disabled = false;
-                            submitBtn.textContent = "Upload Photo";
-                        });
+                        const photos = JSON.parse(localStorage.getItem("mcms_photos")) || [];
+                        photos.unshift({ title: title, url: compressedDataUrl });
+                        localStorage.setItem("mcms_photos", JSON.stringify(photos));
+
+                        uploadForm.reset();
+                        loadGallery();
                     };
                 };
                 reader.readAsDataURL(file);

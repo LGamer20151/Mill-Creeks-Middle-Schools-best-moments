@@ -5,91 +5,178 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Mill Creek Middle School Photo Gallery</title>
     <style>
+        :root {
+            --primary: #0f172a;
+            --accent: #2563eb;
+            --accent-hover: #1d4ed8;
+            --bg-color: #f8fafc;
+            --card-bg: #ffffff;
+            --text-main: #334155;
+            --border-color: #cbd5e1;
+        }
+
         body {
-            font-family: Arial, sans-serif;
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
             margin: 0;
             padding: 0;
-            background-color: #f4f4f9;
-            color: #333;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            line-height: 1.5;
         }
+
         header {
-            background-color: #002b49;
+            background: linear-gradient(135deg, #0f172a 0%, #1e3a8a 100%);
             color: white;
-            padding: 25px 20px;
+            padding: 40px 20px;
             text-align: center;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
         }
+
         .logo-container {
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 10px;
-            margin-bottom: 10px;
+            gap: 12px;
+            margin-bottom: 8px;
         }
+
         .school-icon {
-            width: 45px;
-            height: 45px;
-            fill: white;
+            width: 50px;
+            height: 50px;
+            fill: #60a5fa;
         }
+
+        header h2 {
+            margin: 0;
+            font-size: 1.25rem;
+            font-weight: 500;
+            color: #93c5fd;
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+        }
+
+        header h1 {
+            margin: 5px 0 0 0;
+            font-size: 2.5rem;
+            font-weight: 700;
+        }
+
         main {
-            max-width: 900px;
-            margin: 20px auto;
+            max-width: 1000px;
+            margin: 40px auto;
             padding: 0 20px;
         }
+
         section {
-            background: white;
-            padding: 20px;
-            margin-bottom: 20px;
-            border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            background: var(--card-bg);
+            padding: 30px;
+            margin-bottom: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
         }
+
         h2 {
-            color: #002b49;
+            color: var(--primary);
             margin-top: 0;
+            font-size: 1.5rem;
+            border-bottom: 2px solid #f1f5f9;
+            padding-bottom: 10px;
+            margin-bottom: 20px;
         }
+
         form {
             display: flex;
             flex-direction: column;
-            gap: 15px;
-        }
-        input[type="text"], input[type="file"] {
-            padding: 10px;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-            font-size: 16px;
-        }
-        button {
-            background-color: #0056b3;
-            color: white;
-            padding: 10px;
-            border: none;
-            border-radius: 4px;
-            font-size: 16px;
-            cursor: pointer;
-        }
-        button:hover {
-            background-color: #004085;
-        }
-        .gallery-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
             gap: 20px;
         }
-        .photo-card {
-            border: 1px solid #ddd;
-            border-radius: 6px;
-            overflow: hidden;
-            background: #fafafa;
+
+        .input-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
         }
+
+        label {
+            font-weight: 600;
+            font-size: 0.9rem;
+            color: var(--primary);
+        }
+
+        input[type="text"], input[type="file"] {
+            padding: 12px;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            font-size: 1rem;
+            outline: none;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+
+        input[type="text"]:focus, input[type="file"]:focus {
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+        }
+
+        button {
+            background-color: var(--accent);
+            color: white;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.2s, transform 0.1s;
+        }
+
+        button:hover {
+            background-color: var(--accent-hover);
+        }
+
+        button:active {
+            transform: scale(0.98);
+        }
+
+        .gallery-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 25px;
+        }
+
+        .photo-card {
+            border: 1px solid #e2e8f0;
+            border-radius: 10px;
+            overflow: hidden;
+            background: white;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .photo-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+        }
+
         .photo-card img {
             width: 100%;
-            height: 200px;
+            height: 220px;
             object-fit: cover;
+            border-bottom: 1px solid #f1f5f9;
         }
+
         .photo-card p {
-            padding: 10px;
+            padding: 15px;
             margin: 0;
-            font-weight: bold;
+            font-weight: 600;
+            color: var(--primary);
             text-align: center;
+        }
+
+        .loading-text, .empty-text {
+            grid-column: 1 / -1;
+            text-align: center;
+            color: #64748b;
+            padding: 40px 0;
+            font-size: 1.1rem;
         }
     </style>
 </head>
@@ -106,18 +193,24 @@
 
     <main>
         <section class="upload-section">
-            <h2>Upload a Photo</h2>
+            <h2>Share a Memory</h2>
             <form id="uploadForm">
-                <input type="text" id="photoTitle" placeholder="Enter photo title or description" required>
-                <input type="file" id="photoFile" accept="image/*" required>
+                <div class="input-group">
+                    <label for="photoTitle">Photo Title</label>
+                    <input type="text" id="photoTitle" placeholder="e.g., Science Fair Fun" required>
+                </div>
+                <div class="input-group">
+                    <label for="photoFile">Choose Image</label>
+                    <input type="file" id="photoFile" accept="image/*" required>
+                </div>
                 <button type="submit" id="submitBtn">Upload Photo</button>
             </form>
         </section>
 
         <section class="gallery-section">
-            <h2>School Gallery</h2>
+            <h2>Student Gallery</h2>
             <div id="galleryContainer" class="gallery-grid">
-                <p>Loading shared gallery...</p>
+                <div class="loading-text">Loading shared gallery...</div>
             </div>
         </section>
     </main>
@@ -141,7 +234,7 @@
                         renderGallery(data.photos || []);
                     })
                     .catch(error => {
-                        galleryContainer.innerHTML = "<p>Error loading shared photos. Please refresh.</p>";
+                        galleryContainer.innerHTML = '<div class="empty-text">Error loading shared photos. Please refresh.</div>';
                     });
             }
 
@@ -149,7 +242,7 @@
                 galleryContainer.innerHTML = "";
 
                 if (photos.length === 0) {
-                    galleryContainer.innerHTML = "<p>No memories uploaded yet. Be the first to add one!</p>";
+                    galleryContainer.innerHTML = '<div class="empty-text">No memories uploaded yet. Be the first to add one!</div>';
                     return;
                 }
 
@@ -222,7 +315,7 @@
                                 submitBtn.disabled = false;
                             })
                             .catch(error => {
-                                alert("Upload failed. Please try again.");
+                                alert("Failed to upload photo. Please try again.");
                                 submitBtn.textContent = "Upload Photo";
                                 submitBtn.disabled = false;
                             });

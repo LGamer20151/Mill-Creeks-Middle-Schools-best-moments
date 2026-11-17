@@ -1,4 +1,4 @@
-// TODO: Replace with your own free Firebase project credentials
+// TODO: Replace with your actual free Firebase project credentials
 const firebaseConfig = {
     apiKey: "YOUR_API_KEY",
     authDomain: "YOUR_AUTH_DOMAIN",
@@ -17,8 +17,8 @@ const submitBtn = document.getElementById('submit-btn');
 const galleryGrid = document.getElementById('gallery-grid');
 const emptyMessage = document.getElementById('empty-message');
 
-// Helper function to compress and convert image to text instantly
-function processImage(file, maxWidth = 600, quality = 0.6) {
+// Compress image instantly in browser for lightning-fast uploads
+function processImage(file, maxWidth = 500, quality = 0.5) {
     return new Promise((resolve) => {
         const reader = new FileReader();
         reader.readAsDataURL(file);
@@ -41,7 +41,6 @@ function processImage(file, maxWidth = 600, quality = 0.6) {
                 const ctx = canvas.getContext('2d');
                 ctx.drawImage(img, 0, 0, width, height);
 
-                // Convert directly to a fast data string
                 const dataUrl = canvas.toDataURL('image/jpeg', quality);
                 resolve(dataUrl);
             };
@@ -63,17 +62,14 @@ uploadForm.addEventListener('submit', async (e) => {
     submitBtn.disabled = true;
 
     try {
-        // 1. Process and compress image instantly in the browser
         const imageDataUrl = await processImage(file);
 
-        // 2. Save memory directly to Firestore Database
         await db.collection('memories').add({
             title: title,
             imageUrl: imageDataUrl,
             createdAt: firebase.firestore.FieldValue.serverTimestamp()
         });
 
-        // Reset Form
         uploadForm.reset();
         submitBtn.textContent = "Upload Photo";
         submitBtn.disabled = false;

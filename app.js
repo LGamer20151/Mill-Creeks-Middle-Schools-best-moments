@@ -18,6 +18,38 @@ const submitBtn = document.getElementById('submit-btn');
 const galleryGrid = document.getElementById('gallery-grid');
 const emptyMessage = document.getElementById('empty-message');
 
+// Helper function to resize images so they upload instantly
+function resizeImage(file, maxWidth = 800, quality = 0.7) {
+    return new Promise((resolve) => {
+        const reader = new FileReader();
+        reader.readAsDataURL(file);
+        reader.onload = (event) => {
+            const img = new Image();
+            img.src = event.target.result;
+            img.onload = () => {
+                const canvas = document.createElement('canvas');
+                let width = img.width;
+                let height = img.height;
+
+                if (width > maxWidth) {
+                    height = Math.round((height * maxWidth) / width);
+                    width = maxWidth;
+                }
+
+                canvas.width = width;
+                canvas.height = height;
+
+                const ctx = canvas.getContext('2d');
+                ctx.drawImage(img, 0, 0, width, height);
+
+                canvas.toBlob((blob) => {
+                    resolve(blob);
+                }, 'image/jpeg', quality);
+            };
+        };
+    });
+}
+
 // Handle Image Upload
 uploadForm.addEventListener('submit', async (e) => {
     e.preventDefault();
@@ -28,16 +60,19 @@ uploadForm.addEventListener('submit', async (e) => {
 
     if (!file) return;
 
-    submitBtn.textContent = "Uploading...";
+    submitBtn.textContent = "Compressing & Uploading...";
     submitBtn.disabled = true;
 
     try {
-        // 1. Upload image to Firebase Storage
+        // 1. Shrink the image file size instantly
+        const compressedBlob = await resizeImage(file);
+
+        // 2. Upload compressed image to Firebase Storage
         const storageRef = storage.ref(`images/${Date.now()}_${file.name}`);
-        const snapshot = await storageRef.put(file);
+        const snapshot = await storageRef.put(compressedBlob);
         const downloadUrl = await snapshot.ref.getDownloadURL();
 
-        // 2. Save memory info to Firestore Database
+        // 3. Save memory info to Firestore Database
         await db.collection('memories').add({
             title: title,
             imageUrl: downloadUrl,

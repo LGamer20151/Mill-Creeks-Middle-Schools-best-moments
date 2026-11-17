@@ -1,106 +1,73 @@
-// Firebase configuration
-const firebaseConfig = {
-    apiKey: "YOUR_API_KEY",
-    authDomain: "YOUR_AUTH_DOMAIN",
-    projectId: "YOUR_PROJECT_ID",
-    storageBucket: "YOUR_STORAGE_BUCKET",
-    messagingSenderId: "YOUR_SENDER_ID",
-    appId: "YOUR_APP_ID"
-};
+const NPOINT_URL = "https://api.npoint.io/1afce02931a785197b7a";
 
-// Initialize Firebase
-firebase.initializeApp(firebaseConfig);
-const db = firebase.firestore();
+const galleryGrid = document.getElementById("galleryGrid");
+const uploadBtn = document.getElementById("uploadBtn");
+const photoTitleInput = document.getElementById("photoTitle");
+const photoFileInput = document.getElementById("photoFile");
 
-const uploadForm = document.getElementById('upload-form');
-const submitBtn = document.getElementById('submit-btn');
-const galleryGrid = document.getElementById('gallery-grid');
-const emptyMessage = document.getElementById('empty-message');
-
-// Compress image so it uploads fast
-function processImage(file, maxWidth = 500, quality = 0.5) {
-    return new Promise((resolve) => {
-        const reader = new FileReader();
-        reader.readAsDataURL(file);
-        reader.onload = (event) => {
-            const img = new Image();
-            img.src = event.target.result;
-            img.onload = () => {
-                const canvas = document.createElement('canvas');
-                let width = img.width;
-                let height = img.height;
-
-                if (width > maxWidth) {
-                    height = Math.round((height * maxWidth) / width);
-                    width = maxWidth;
-                }
-
-                canvas.width = width;
-                canvas.height = height;
-
-                const ctx = canvas.getContext('2d');
-                ctx.drawImage(img, 0, 0, width, height);
-
-                const dataUrl = canvas.toDataURL('image/jpeg', quality);
-                resolve(dataUrl);
-            };
-        };
-    });
+function loadPhotos() {
+    fetch(NPOINT_URL)
+        .then(response => response.json())
+        .then(data => {
+            galleryGrid.innerHTML = "";
+            if (data.photos) {
+                data.photos.forEach(photo => {
+                    const card = document.createElement("div");
+                    card.className = "photo-card";
+                    card.innerHTML = `
+                        <img src="${photo.image}" alt="${photo.title}">
+                        <p>${photo.title}</p>
+                    `;
+                    galleryGrid.appendChild(card);
+                });
+            }
+        })
+        .catch(error => console.log("Error loading photos:", error));
 }
 
-// Handle Image Upload
-uploadForm.addEventListener('submit', async (e) => {
-    e.preventDefault();
-    
-    const title = document.getElementById('photo-title').value;
-    const fileInput = document.getElementById('photo-file');
-    const file = fileInput.files[0];
+uploadBtn.addEventListener("click", () => {
+    const title = photoTitleInput.value;
+    const file = photoFileInput.files[0];
 
-    if (!file) return;
-
-    submitBtn.textContent = "Uploading...";
-    submitBtn.disabled = true;
-
-    try {
-        const imageDataUrl = await processImage(file);
-
-        // Save memory to database
-        await db.collection('memories').add({
-            title: title,
-            imageUrl: imageDataUrl,
-            createdAt: firebase.firestore.FieldValue.serverTimestamp()
-        });
-
-        uploadForm.reset();
-        submitBtn.textContent = "Upload Photo";
-        submitBtn.disabled = false;
-    } catch (error) {
-        console.error("Error uploading memory: ", error);
-        alert("Upload failed. Please check your setup.");
-        submitBtn.textContent = "Upload Photo";
-        submitBtn.disabled = false;
-    }
-});
-
-// Load and display memories
-db.collection('memories').orderBy('createdAt', 'desc').onSnapshot((snapshot) => {
-    galleryGrid.innerHTML = "";
-    
-    if (snapshot.empty) {
-        emptyMessage.style.display = "block";
+    if (!title || !file) {
+        alert("Please enter a title and choose a photo!");
         return;
     }
 
-    emptyMessage.style.display = "none";
+    const reader = new FileReader();
+    reader.onload = function(event) {
+        const base64Image = event.target.result;
+        
+        fetch(NPOINT_URL)
+            .then(res => res.json())
+            .then(data => {
+                if (!data.photos) {
+                    data.photos = [];
+                }
+                
+                data.photos.push({
+                    title: title,
+                    image: base64Image
+                });
 
-    snapshot.forEach((doc) => {
-        const memory = doc.data();
-        const item = document.createElement('div');
-        item.className = 'gallery-item';
-        item.innerHTML = `
-            <img src="${memory.imageUrl}" alt="${memory.title}">
-            <h3>${memory.title}</h3>
-        `;
-        galleryGrid.appendChild(item);
-    });
+                return fetch(NPOINT_URL, {
+                    method: "PUT",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify(data)
+                });
+            })
+            .then(() => {
+                alert("Photo uploaded successfully!");
+                photoTitleInput.value = "";
+                photoFileInput.value = "";
+                loadPhotos();
+            })
+            .catch(error => console.log("Error uploading:", error));
+    };
+
+    reader.readAsDataURL(file);
 });
+
+loadPhotos();

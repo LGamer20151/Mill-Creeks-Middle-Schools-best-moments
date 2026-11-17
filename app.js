@@ -1,4 +1,4 @@
-// TODO: Replace with your actual free Firebase project credentials
+// Firebase configuration
 const firebaseConfig = {
     apiKey: "YOUR_API_KEY",
     authDomain: "YOUR_AUTH_DOMAIN",
@@ -17,7 +17,7 @@ const submitBtn = document.getElementById('submit-btn');
 const galleryGrid = document.getElementById('gallery-grid');
 const emptyMessage = document.getElementById('empty-message');
 
-// Compress image instantly in browser for lightning-fast uploads
+// Compress image so it uploads fast
 function processImage(file, maxWidth = 500, quality = 0.5) {
     return new Promise((resolve) => {
         const reader = new FileReader();
@@ -64,6 +64,7 @@ uploadForm.addEventListener('submit', async (e) => {
     try {
         const imageDataUrl = await processImage(file);
 
+        // Save memory to database
         await db.collection('memories').add({
             title: title,
             imageUrl: imageDataUrl,
@@ -75,13 +76,13 @@ uploadForm.addEventListener('submit', async (e) => {
         submitBtn.disabled = false;
     } catch (error) {
         console.error("Error uploading memory: ", error);
-        alert("Upload failed. Please check your Firebase configuration.");
+        alert("Upload failed. Please check your setup.");
         submitBtn.textContent = "Upload Photo";
         submitBtn.disabled = false;
     }
 });
 
-// Load and Display Memories in Real-Time
+// Load and display memories
 db.collection('memories').orderBy('createdAt', 'desc').onSnapshot((snapshot) => {
     galleryGrid.innerHTML = "";
     

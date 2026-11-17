@@ -1,58 +1,32 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mill Creek Memories</title>
-    <link rel="stylesheet" href="style.css">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-</head>
-<body>
+html lang="en">
+head>
+    meta charset="UTF-8">
+    meta name="viewport" content="width=device-width, initial-scale=1.0">
+    title>Mill Creek Memories</title>
+    link rel="stylesheet" href="style.css">
+/head>
+body>
 
-    <!-- Header -->
-    <header class="header">
-        <div class="logo-container">
-            <svg class="school-icon" viewBox="0 0 24 24" width="32" height="32" stroke="currentColor" stroke-width="2" fill="none"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
-            <span class="school-name">MILL CREEK MIDDLE SCHOOL</span>
-        </div>
+    header>
         <h1>Mill Creek Memories</h1>
-    </header>
+        <p>Our school photo sharing page</p>
+    /header>
 
-    <!-- Main Container -->
-    <main class="container">
-        
-        <!-- Share a Memory Card -->
-        <section class="card">
-            <h2>Share a Memory</h2>
-            <form id="upload-form">
-                <div class="form-group">
-                    <label for="photo-title">Photo Title</label>
-                    <input type="text" id="photo-title" placeholder="Enter title..." required>
-                </div>
-
-                <div class="form-group">
-                    <label for="photo-file">Choose Image</label>
-                    <input type="file" id="photo-file" accept="image/*" required>
-                </div>
-
-                <button type="submit" id="submit-btn" class="btn-gold">Upload Photo</button>
-            </form>
+    <main>
+        <section class="upload-section">
+            <h2>Add a Photo</h2>
+            <input type="text" id="photoTitle" placeholder="Photo Title...">
+            <input type="file" id="photoFile" accept="image/*">
+            <button id="uploadBtn">Upload Photo</button>
         </section>
 
-        <!-- Student Gallery Card -->
-        <section class="card">
-            <h2>Student Gallery</h2>
-            <div id="gallery-container">
-                <p id="empty-message">No memories uploaded yet. Be the first to add one!</p>
-                <div id="gallery-grid" class="gallery-grid"></div>
-            </div>
+        <section class="gallery-section">
+            <h2>Photo Gallery</h2>
+            <div id="galleryGrid" class="grid"></div>
         </section>
-
     </main>
 
-    <!-- Firebase Scripts -->
-    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
-    <script src="app.js"></script>
-</body>
+    script src="app.js"></script>
+/body>
 </html>

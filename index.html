@@ -3,335 +3,57 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mill Creek Middle School Photo Gallery</title>
-    <style>
-        :root {
-            --primary: #111111;
-            --accent: #d4af37;
-            --accent-hover: #b89728;
-            --accent-text: #111111;
-            --bg-color: #f8f9fa;
-            --card-bg: #ffffff;
-            --text-main: #222222;
-            --border-color: #e5e7eb;
-        }
-
-        body {
-            font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-            margin: 0;
-            padding: 0;
-            background-color: var(--bg-color);
-            color: var(--text-main);
-            line-height: 1.5;
-        }
-
-        header {
-            background: linear-gradient(135deg, #111111 0%, #222222 100%);
-            color: white;
-            padding: 40px 20px;
-            text-align: center;
-            border-bottom: 4px solid var(--accent);
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-        }
-
-        .logo-container {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 12px;
-            margin-bottom: 8px;
-        }
-
-        .school-icon {
-            width: 50px;
-            height: 50px;
-            fill: var(--accent);
-        }
-
-        header h2 {
-            margin: 0;
-            font-size: 1.25rem;
-            font-weight: 600;
-            color: var(--accent);
-            letter-spacing: 0.05em;
-            text-transform: uppercase;
-        }
-
-        header h1 {
-            margin: 5px 0 0 0;
-            font-size: 2.5rem;
-            font-weight: 700;
-            color: #ffffff;
-        }
-
-        main {
-            max-width: 1000px;
-            margin: 40px auto;
-            padding: 0 20px;
-        }
-
-        section {
-            background: var(--card-bg);
-            padding: 30px;
-            margin-bottom: 30px;
-            border-radius: 12px;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
-            border-top: 4px solid var(--primary);
-        }
-
-        h2 {
-            color: var(--primary);
-            margin-top: 0;
-            font-size: 1.5rem;
-            border-bottom: 2px solid #f1f5f9;
-            padding-bottom: 10px;
-            margin-bottom: 20px;
-        }
-
-        form {
-            display: flex;
-            flex-direction: column;
-            gap: 20px;
-        }
-
-        .input-group {
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-        }
-
-        label {
-            font-weight: 600;
-            font-size: 0.9rem;
-            color: var(--primary);
-        }
-
-        input[type="text"], input[type="file"] {
-            padding: 12px;
-            border: 1px solid var(--border-color);
-            border-radius: 8px;
-            font-size: 1rem;
-            outline: none;
-            transition: border-color 0.2s, box-shadow 0.2s;
-        }
-
-        input[type="text"]:focus, input[type="file"]:focus {
-            border-color: var(--accent);
-            box-shadow: 0 0 0 3px rgba(212, 175, 55, 0.2);
-        }
-
-        button {
-            background-color: var(--accent);
-            color: var(--accent-text);
-            padding: 12px 20px;
-            border: none;
-            border-radius: 8px;
-            font-size: 1rem;
-            font-weight: 700;
-            cursor: pointer;
-            transition: background-color 0.2s, transform 0.1s;
-        }
-
-        button:hover {
-            background-color: var(--accent-hover);
-        }
-
-        button:active {
-            transform: scale(0.98);
-        }
-
-        .gallery-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-            gap: 25px;
-        }
-
-        .photo-card {
-            border: 1px solid #e2e8f0;
-            border-radius: 10px;
-            overflow: hidden;
-            background: white;
-            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-            transition: transform 0.2s, box-shadow 0.2s;
-        }
-
-        .photo-card:hover {
-            transform: translateY(-4px);
-            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
-            border-color: var(--accent);
-        }
-
-        .photo-card img {
-            width: 100%;
-            height: 220px;
-            object-fit: cover;
-            border-bottom: 1px solid #f1f5f9;
-        }
-
-        .photo-card p {
-            padding: 15px;
-            margin: 0;
-            font-weight: 600;
-            color: var(--primary);
-            text-align: center;
-        }
-
-        .loading-text, .empty-text {
-            grid-column: 1 / -1;
-            text-align: center;
-            color: #64748b;
-            padding: 40px 0;
-            font-size: 1.1rem;
-        }
-    </style>
+    <title>Mill Creek Memories</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 </head>
 <body>
-    <header>
+
+    <!-- Header -->
+    <header class="header">
         <div class="logo-container">
-            <svg class="school-icon" viewBox="0 0 24 24">
-                <path d="M12 3L1 9L12 15L21 10.09V17H23V9M5 13.18V17.18C5 20.09 8.16 22 12 22C15.84 22 19 20.09 19 17.18V13.18L12 17L5 13.18Z"/>
-            </svg>
-            <h2>Mill Creek Middle School</h2>
+            <svg class="school-icon" viewBox="0 0 24 24" width="32" height="32" stroke="currentColor" stroke-width="2" fill="none"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+            <span class="school-name">MILL CREEK MIDDLE SCHOOL</span>
         </div>
         <h1>Mill Creek Memories</h1>
     </header>
 
-    <main>
-        <section class="upload-section">
+    <!-- Main Container -->
+    <main class="container">
+        
+        <!-- Share a Memory Card -->
+        <section class="card">
             <h2>Share a Memory</h2>
-            <form id="uploadForm">
-                <div class="input-group">
-                    <label for="photoTitle">Photo Title</label>
-                    <input type="text" id="photoTitle" placeholder="e.g., Science Fair Fun" required>
+            <form id="upload-form">
+                <div class="form-group">
+                    <label for="photo-title">Photo Title</label>
+                    <input type="text" id="photo-title" placeholder="Enter title..." required>
                 </div>
-                <div class="input-group">
-                    <label for="photoFile">Choose Image</label>
-                    <input type="file" id="photoFile" accept="image/*" required>
+
+                <div class="form-group">
+                    <label for="photo-file">Choose Image</label>
+                    <input type="file" id="photo-file" accept="image/*" required>
                 </div>
-                <button type="submit" id="submitBtn">Upload Photo</button>
+
+                <button type="submit" id="submit-btn" class="btn-gold">Upload Photo</button>
             </form>
         </section>
 
-        <section class="gallery-section">
+        <!-- Student Gallery Card -->
+        <section class="card">
             <h2>Student Gallery</h2>
-            <div id="galleryContainer" class="gallery-grid">
-                <div class="loading-text">Loading shared gallery...</div>
+            <div id="gallery-container">
+                <p id="empty-message">No memories uploaded yet. Be the first to add one!</p>
+                <div id="gallery-grid" class="gallery-grid"></div>
             </div>
         </section>
+
     </main>
 
-    <script>
-        const CLOUD_API_URL = "https://api.npoint.io/1afce02931a785197b7a";
-
-        document.addEventListener("DOMContentLoaded", () => {
-            const uploadForm = document.getElementById("uploadForm");
-            const photoTitleInput = document.getElementById("photoTitle");
-            const photoFileInput = document.getElementById("photoFile");
-            const galleryContainer = document.getElementById("galleryContainer");
-            const submitBtn = document.getElementById("submitBtn");
-
-            fetchGallery();
-
-            function fetchGallery() {
-                fetch(CLOUD_API_URL)
-                    .then(response => response.json())
-                    .then(data => {
-                        renderGallery(data.photos || []);
-                    })
-                    .catch(error => {
-                        galleryContainer.innerHTML = '<div class="empty-text">Error loading shared photos. Please refresh.</div>';
-                    });
-            }
-
-            function renderGallery(photos) {
-                galleryContainer.innerHTML = "";
-
-                if (photos.length === 0) {
-                    galleryContainer.innerHTML = '<div class="empty-text">No memories uploaded yet. Be the first to add one!</div>';
-                    return;
-                }
-
-                photos.forEach((photo) => {
-                    const card = document.createElement("div");
-                    card.className = "photo-card";
-
-                    const img = document.createElement("img");
-                    img.src = photo.url;
-                    img.alt = photo.title;
-
-                    const p = document.createElement("p");
-                    p.textContent = photo.title;
-
-                    card.appendChild(img);
-                    card.appendChild(p);
-                    galleryContainer.appendChild(card);
-                });
-            }
-
-            uploadForm.addEventListener("submit", (e) => {
-                e.preventDefault();
-                submitBtn.textContent = "Uploading...";
-                submitBtn.disabled = true;
-
-                const title = photoTitleInput.value;
-                const file = photoFileInput.files[0];
-
-                if (!file) {
-                    submitBtn.textContent = "Upload Photo";
-                    submitBtn.disabled = false;
-                    return;
-                }
-
-                const reader = new FileReader();
-                reader.onload = function (event) {
-                    const img = new Image();
-                    img.src = event.target.result;
-                    img.onload = function () {
-                        const canvas = document.createElement("canvas");
-                        const MAX_WIDTH = 300;
-                        const scaleSize = MAX_WIDTH / img.width;
-                        canvas.width = MAX_WIDTH;
-                        canvas.height = img.height * scaleSize;
-
-                        const ctx = canvas.getContext("2d");
-                        ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-
-                        const compressedDataUrl = canvas.toDataURL("image/jpeg", 0.5);
-
-                        fetch(CLOUD_API_URL)
-                            .then(response => response.json())
-                            .then(data => {
-                                const photos = data.photos || [];
-                                photos.unshift({ title: title, url: compressedDataUrl });
-
-                                return fetch(CLOUD_API_URL, {
-                                    method: "PUT",
-                                    headers: {
-                                        "Content-Type": "application/json"
-                                    },
-                                    body: JSON.stringify({ photos: photos })
-                                });
-                            })
-                            .then(response => {
-                                if (!response.ok) throw new Error("Failed to save to cloud");
-                                return response.json();
-                            })
-                            .then(data => {
-                                renderGallery(data.photos || []);
-                                uploadForm.reset();
-                                submitBtn.textContent = "Upload Photo";
-                                submitBtn.disabled = false;
-                            })
-                            .catch(error => {
-                                alert("Failed to upload photo. Please try a smaller image file.");
-                                submitBtn.textContent = "Upload Photo";
-                                submitBtn.disabled = false;
-                            });
-                    };
-                };
-                reader.readAsDataURL(file);
-            });
-        });
-    </script>
+    <!-- Firebase Scripts -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-storage-compat.js"></script>
+    <script src="app.js"></script>
 </body>
 </html>
